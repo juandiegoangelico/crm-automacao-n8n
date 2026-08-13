@@ -1,0 +1,179 @@
+{
+  "name": "CRM - Automação de Leads.",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            },
+            {}
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1CAiI39zdGc4tfQzyQY6iUE7dsbkDVDGP3IA4w_P69Sg",
+          "mode": "list",
+          "cachedResultName": "CRM_Automacao_Portafolio",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CAiI39zdGc4tfQzyQY6iUE7dsbkDVDGP3IA4w_P69Sg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 63141883,
+          "mode": "list",
+          "cachedResultName": "Respostas ao formulário 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CAiI39zdGc4tfQzyQY6iUE7dsbkDVDGP3IA4w_P69Sg/edit#gid=63141883"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6bf60fae-0aad-43da-a172-94cb5ed1bd5b",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "xoutCDheh3AzmpYi",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "650f78cc-253b-4f7d-97a4-df8a28a0b289",
+              "name": "={{ $json['Nome do Contato'] }}",
+              "value": "Nome",
+              "type": "string"
+            },
+            {
+              "id": "8b7dda21-c633-4a04-9fee-11d3aaa63448",
+              "name": "={{ $json['E-mail Corporativo'] }}",
+              "value": "Email",
+              "type": "string"
+            },
+            {
+              "id": "85444b79-cb9b-4438-8b47-676d0c317daa",
+              "name": "={{ $json['Nome da Empresa'] }}",
+              "value": "Empresa",
+              "type": "string"
+            },
+            {
+              "id": "b0780e81-2c5b-45ee-8cae-dadabb43f1c7",
+              "name": "={{ $json['Valor Estimado do Projeto'] }}",
+              "value": "Valor",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        192,
+        -160
+      ],
+      "id": "95dfcda9-8961-4fa5-96fd-ae2a4ddca8b5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets Trigger').item.json['E-mail Corporativo'] }}\n",
+        "subject": "=Recebemos sua solicitação - {{ $json.Empresa }}",
+        "message": "=Olá, {{ $json.Nome }}!\nConfirmamos o recebimento da sua solicitação referente à empresa {{ $json.Empresa }}. Nossa equipe analisará os dados e retornará em breve.\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -160
+      ],
+      "id": "f143bb47-2228-446f-a8dd-a388c79183f1",
+      "name": "Send a message",
+      "webhookId": "17f1fdc6-c2e3-411a-9f63-f28402a6acdf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MlLHOHFY8Q2HeApl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": ""https://hooks.slack.com/services/SEU_WEBHOOK_DO_SLACK_AQUI"",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"🚨 *Novo Lead Cadastrado no CRM!*\\n\\n• *Cliente:* {{ $('Google Sheets Trigger').item.json['Nome do Contato'] }}\\n• *E-mail:* {{ $('Google Sheets Trigger').item.json['E-mail Corporativo'] }}\\n• *Empresa:* {{ $('Google Sheets Trigger').item.json['Nome da Empresa'] }}\\n• *Valor Estimado:* {{ $('Google Sheets Trigger').item.json['Valor Estimado do Projeto'] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        640,
+        -160
+      ],
+      "id": "636dc5ae-8e5a-4bb9-811b-e24dd1f2daac",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a2f61142-3e5d-4e40-a863-aa7e3643de36",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f49d1c319a5f63b4e9e59d6b54caeac7f91fc239a574cf957155a95682081efa"
+  },
+  "nodeGroups": [],
+  "id": "DDrlDKm1QresNNGQ",
+  "tags": []
+}
