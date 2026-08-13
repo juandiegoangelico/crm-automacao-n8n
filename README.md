@@ -17,3 +17,14 @@ O objetivo principal é demonstrar a construção de uma arquitetura *low-code* 
 ---
 
 ## 📐 Arquitetura da Solução
+
+## 📸 Evidências de Funcionamento
+
+### Workflow no n8n
+![Workflow do n8n](assets/n8n-workflow.png)
+
+### Notificação no Slack
+![Notificação no Slack](assets/slack-notification.png)
+
+### E-mail de Confirmação
+![E-mail no Gmail](assets/gmail-confirmation.png)
